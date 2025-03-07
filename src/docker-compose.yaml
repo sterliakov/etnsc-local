@@ -1,6 +1,9 @@
 # You can edit this file freely, add other services, adjust the values
 # or do something else.
 services:
+    # Please do not rename this service. If necessary, add hostname
+    # for inter-container communication if `electroneum-node` is too long
+    # for you.
     electroneum-node:
         image: sterliakov/electroneum-local:v6.0.0
         # You can use command to pass any extra flags to etn-sc
