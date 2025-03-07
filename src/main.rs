@@ -1,7 +1,7 @@
 use std::{
     ffi::OsStr,
     path::PathBuf,
-    process::{Child, Command, Stdio},
+    process::{Command, Stdio},
 };
 
 use clap::{Args, Parser, Subcommand};
@@ -29,39 +29,54 @@ enum Commands {
     /// Any newly added accounts will be seeded. Accounts that already exist
     /// will not be changed.
     Start(FileSpec),
-    /// Stop the local node (all data will be retained when started again).
+    /// Stop the local node.
+    ///
+    /// All data will be retained when started again).
     Stop(FileSpec),
-    /// Clear remains from previous runs. This will erase all transactions history.
+    /// Clear remains from previous runs.
+    ///
+    /// This will erase all transactions history.
     Clear(FileSpec),
 }
 
 #[derive(Args)]
 struct Init {
-    #[arg(long = "force")]
-    force: Option<bool>,
-    #[arg(short = 'f', long = "file", env = "ETNSC_COMPOSE_FILE")]
-    file: Option<PathBuf>,
+    /// docker-compose file name to use.
+    #[arg(short = 'f', long = "file", env = "ETNSC_COMPOSE_FILE", default_value=DEFAULT_FILE)]
+    file: PathBuf,
+    /// Allow overwriting existing file with the same name.
+    #[arg(short = 'F', long = "force", action)]
+    force: bool,
 }
 
 #[derive(Args)]
 struct FileSpec {
+    /// docker-compose file name to use.
     #[arg(short = 'f', long = "file", env = "ETNSC_COMPOSE_FILE", default_value=DEFAULT_FILE)]
     file: PathBuf,
-    #[arg(short = 'v', long = "verbose")]
-    verbose: Option<bool>,
+    /// Display docker compose output and print more information.
+    #[arg(short = 'v', long = "verbose", action)]
+    verbose: bool,
 }
 
 impl FileSpec {
     pub fn run_docker_command<I: IntoIterator<Item = S>, S: AsRef<OsStr>>(
         &self,
         args: I,
-    ) -> Result<Child, std::io::Error> {
+    ) -> Result<(), std::io::Error> {
         let mut cmd = Command::new("docker");
         let mut cmd = cmd.arg("compose").arg("-f").arg(&self.file).args(args);
-        if !self.verbose.unwrap_or(false) {
+        if !self.verbose {
             cmd = cmd.stdout(Stdio::null()).stderr(Stdio::null());
         }
-        cmd.spawn()
+        match cmd.status() {
+            Ok(c) if c.success() => Ok(()),
+            Ok(_) => Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Command execution failed.",
+            )),
+            Err(e) => Err(e),
+        }
     }
 
     pub fn require_compose_file(&self) -> Result<(), String> {
@@ -78,10 +93,7 @@ impl FileSpec {
 
 fn entrypoint(cli: Cli) -> Result<(), String> {
     match &cli.command {
-        Commands::Init(Init { force, file }) => commands::init_command(
-            file.as_ref().unwrap_or(&DEFAULT_FILE.into()),
-            force.unwrap_or(false),
-        ),
+        Commands::Init(Init { force, file }) => commands::init_command(file, *force),
         Commands::Start(spec) => commands::start_command(spec),
         Commands::Stop(spec) => commands::stop_command(spec),
         Commands::Clear(spec) => commands::clear_command(spec),
@@ -92,6 +104,6 @@ fn main() {
     let cli = Cli::parse();
     match entrypoint(cli) {
         Ok(_) => println!("Success!"),
-        Err(e) => println!("Command execution error:\n{}", e),
+        Err(e) => println!("Command execution error:\n{e}"),
     }
 }
