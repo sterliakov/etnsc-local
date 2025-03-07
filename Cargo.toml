@@ -14,7 +14,7 @@ license = "MIT"
 name = "etnsc-bootstrap"
 readme = "README.md"
 repository = "https://github.com/sterliakov/etnsc-local"
-version = "0.1.0"
+version = "0.1.1"
 
 [profile.release]
 codegen-units = 1

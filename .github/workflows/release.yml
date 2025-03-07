@@ -101,23 +101,32 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                -   build: linux
+                -   build: linux-x64
                     os: ubuntu-latest
                     rust: nightly
                     target: x86_64-unknown-linux-musl
                     strip: x86_64-linux-musl-strip
-                -   build: macos
+                -   build: linux-arm64
+                    os: ubuntu-latest
+                    rust: nightly
+                    target: aarch64-unknown-linux-musl
+                    strip: aarch64-linux-musl-strip
+                -   build: darwin-x64
                     os: macos-latest
                     rust: nightly
                     target: x86_64-apple-darwin
-                -   build: win-msvc
+                -   build: darwin-arm64
+                    os: macos-latest
+                    rust: nightly
+                    target: aarch64-apple-darwin
+                -   build: windows-x64
                     os: windows-latest
                     rust: nightly
                     target: x86_64-pc-windows-msvc
-                -   build: win-gnu
+                -   build: windows-arm64
                     os: windows-latest
-                    rust: nightly-x86_64-gnu
-                    target: x86_64-pc-windows-gnu
+                    rust: nightly
+                    target: aarch64-pc-windows-msvc
 
         steps:
         -   name: Checkout repository
@@ -223,6 +232,58 @@ jobs:
                 gh release upload "$VERSION" ${{ env.ASSET }} ${{ env.ASSET_SUM }}
             env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                VERSION: ${{ needs.create-release.outputs.version }}
+
+        -   name: Install node
+            uses: actions/setup-node@v4
+            with:
+                node-version: 20
+                registry-url: https://registry.npmjs.org
+
+        -   name: Publish to NPM
+            shell: bash
+            run: |
+                cd npm
+                node_os=$(echo "${{ matrix.build }}" | cut -d '-' -f1)
+                export node_os
+                node_arch=$(echo "${{ matrix.build }}" | cut -d '-' -f2)
+                export node_arch
+                export node_pkg="etnsc-bootstrap-${{ matrix.build }}"
+
+                mkdir -p "${node_pkg}/bin"
+                envsubst <package.json.sub.tmpl >"${node_pkg}/package.json"
+                cp "../$BIN" "${node_pkg}/bin"
+
+                cd "${node_pkg}"
+                npm publish --access public
+            env:
+                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                VERSION: ${{ needs.create-release.outputs.version }}
+
+    npm_base_publish:
+        name: Publish the base NPM package
+        needs: [create-release, build-release]
+        runs-on: ubuntu-latest
+        steps:
+        -   name: Checkout repository
+            uses: actions/checkout@v4
+            with:
+                persist-credentials: false
+
+        -   name: Install node
+            uses: actions/setup-node@v4
+            with:
+                node-version: 20
+                registry-url: https://registry.npmjs.org
+
+        -   name: Publish the package
+            shell: bash
+            run: |
+                cd npm/app
+                envsubst <package.json.tmpl >package.json
+                npm publish --access public
+            env:
+                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                 VERSION: ${{ needs.create-release.outputs.version }}
 
     crates_io_publish:
