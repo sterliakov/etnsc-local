@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+data_mount=/opt/data
+
 script=init.js
 cat <<"EOF" >"$script"
     const accounts = [
@@ -14,8 +16,11 @@ while read -r info; do
     IFS=":" read -r -a split <<<"$info"
     privkey=${split[0]}
     amount=${split[1]}
+    if [[ $privkey == 0x* ]]; then
+        printf 'Private key %s must not start with 0x.\n' "$privkey" >&2
+        exit 1
+    fi
     printf '["%s", %d],\n' "$privkey" "$amount" >>"$script"
-
 done <<<"${ACCOUNTS:-}"
 
 cat <<"EOF" >>"$script"
@@ -39,14 +44,17 @@ cat <<"EOF" >>"$script"
     }
 EOF
 
-cat $script
 password_file="password.txt"
 printf "password" >"$password_file"
 
-etn-sc js --dev --datadir /opt/data --password "$password_file" "$script"
+etn-sc js --dev --datadir "$data_mount" --password "$password_file" "$script"
 
-etn-sc --dev --datadir /opt/data \
-    --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net \
-    --http.corsdomain "${CORS_HOSTS:-}" \
+etn-sc --dev --datadir "$data_mount" \
+    --http --http.addr 0.0.0.0 --http.port 8545 \
+    --http.api "${HTTP_APIS:-eth,web3,net}" \
+    --http.corsdomain "${HTTP_CORS_HOSTS:-${CORS_HOSTS:-}}" \
     --ws --ws.addr 0.0.0.0 --ws.port 8546 \
-    --password "$password_file"
+    --ws.api "${WS_APIS:-eth,web3,net}" \
+    --ws.origins "${WS_CORS_HOSTS:-${CORS_HOSTS:-}}" \
+    --password "$password_file" \
+    "$@"

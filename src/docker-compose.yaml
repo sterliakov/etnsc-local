@@ -1,14 +1,34 @@
+# You can edit this file freely, add other services, adjust the values
+# or do something else.
 services:
     electroneum-node:
         image: sterliakov/electroneum-local:v6.0.0
-        restart: unless-stopped
+        # You can use command to pass any extra flags to etn-sc
+        command: ''
         environment:
+            # What domains to allow for websocket and HTTP (CORS) connections?
             CORS_HOSTS: ''
+            # What domains to allow for HTTP (CORS) connections? Overrides CORS_HOSTS
+            HTTP_CORS_HOSTS: ''
+            # What origins to allow for websocket connections? Overrides CORS_HOSTS
+            WS_CORS_HOSTS: ''
+            # What APIs to enable for HTTP API? Defaults to eth,web3,net if unset
+            HTTP_APIS: eth,web3,net
+            # What APIs to enable for websocket API? Defaults to eth,web3,net if unset
+            WS_APIS: eth,web3,net
+            # What accounts to pre-seed?
+            # If an account was already seeded, it won't be removed unless you clean
+            # the node.
+            # Accounts that are already seeded will not be changed later.
+            # If a new account is added, it will be seeded on next restart.
+            # Format: private_key:balance per line, without leading 0x.
             ACCOUNTS: |
                 afdfd9c3d2095ef696594f6cedcae59e72dcd697e2a7521b1578140422a4f890:100
                 afdfd9c3d2095ef696594f6cedcae59e72dcd697e2a7521b1578140422a4f891:100
         ports:
+            # HTTP API. You can map this to any other host port if necessary.
         -   8545:8545
+            # Websocket API. You can map this to any other host port if necessary.
         -   8546:8546
         volumes:
         -   electroneum_data:/opt/data

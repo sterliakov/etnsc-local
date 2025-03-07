@@ -1,9 +1,5 @@
-mod clear;
 mod init;
-mod start;
-mod stop;
+mod lifecycle;
 
-pub use clear::clear_command;
 pub use init::init_command;
-pub use start::start_command;
-pub use stop::stop_command;
+pub use lifecycle::{clear_command, start_command, status_command, stop_command};
