@@ -1,0 +1,17 @@
+services:
+    electroneum-node:
+        image: sterliakov/electroneum-local:v6.0.0
+        restart: unless-stopped
+        environment:
+            CORS_HOSTS: ''
+            ACCOUNTS: |
+                afdfd9c3d2095ef696594f6cedcae59e72dcd697e2a7521b1578140422a4f890:100
+                afdfd9c3d2095ef696594f6cedcae59e72dcd697e2a7521b1578140422a4f891:100
+        ports:
+        -   8545:8545
+        -   8546:8546
+        volumes:
+        -   electroneum_data:/opt/data
+
+volumes:
+    electroneum_data:
