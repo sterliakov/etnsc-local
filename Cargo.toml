@@ -17,4 +17,7 @@ repository = "https://github.com/sterliakov/etnsc-local"
 version = "0.1.0"
 
 [profile.release]
-strip = "debuginfo"
+codegen-units = 1
+debug = "none"
+opt-level = 3
+strip = "symbols"
