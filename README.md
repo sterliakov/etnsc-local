@@ -1,4 +1,4 @@
-etnsc-local is a tool for bootstrapping [Electroneum](https://github.com/electroneum/electroneum-sc)
+etnsc-bootstrap is a tool for bootstrapping [Electroneum](https://github.com/electroneum/electroneum-sc)
 local chain for development.
 
 This is my submission to [Electroneum hackathon 2025](https://electroneum-hackathon-2025.devpost.com/).
@@ -37,14 +37,14 @@ If you are already using compose, you can change the file name with `-f` flag
 variable.
 
 ```bash
-$ etnsc-local init
-$ etnsc-local start
+$ etnsc-bootstrap init
+$ etnsc-bootstrap start
 ```
 
 Read help for more:
 
 ```bash
-$ etnsc-local help
+$ etnsc-bootstrap help
 ```
 
 ## Installation
@@ -58,5 +58,5 @@ $ wget https://FIXME
 `cargo install` also works, if you have the Rut toolchain available:
 
 ```bash
-$ cargo install etnsc-local
+$ cargo install etnsc-bootstrap
 ```

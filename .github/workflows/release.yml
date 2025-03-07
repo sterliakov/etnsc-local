@@ -164,9 +164,9 @@ jobs:
             run: |
                 ${{ env.CARGO }} build --verbose --release ${{ env.TARGET_FLAGS }}
                 if [ "${{ matrix.os }}" = "windows-latest" ]; then
-                  bin="target/${{ matrix.target }}/release/etnsc-local.exe"
+                  bin="target/${{ matrix.target }}/release/etnsc-bootstrap.exe"
                 else
-                  bin="target/${{ matrix.target }}/release/etnsc-local"
+                  bin="target/${{ matrix.target }}/release/etnsc-bootstrap"
                 fi
                 echo "BIN=$bin" >>"$GITHUB_ENV"
 
@@ -188,7 +188,7 @@ jobs:
         -   name: Determine archive name
             shell: bash
             run: |
-                echo "ARCHIVE=etnsc-local-$VERSION-${{ matrix.target }}" >>"$GITHUB_ENV"
+                echo "ARCHIVE=etnsc-bootstrap-$VERSION-${{ matrix.target }}" >>"$GITHUB_ENV"
             env:
                 VERSION: ${{ needs.create-release.outputs.version }}
 
