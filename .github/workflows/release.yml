@@ -126,7 +126,7 @@ jobs:
                 persist-credentials: false
 
         -   name: Install Rust
-            uses: dtolnay/rust-toolchain@master
+            uses: dtolnay/rust-toolchain@stable
             with:
                 toolchain: ${{ matrix.rust }}
                 target: ${{ matrix.target }}
@@ -224,3 +224,24 @@ jobs:
             env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 VERSION: ${{ needs.create-release.outputs.version }}
+
+    crates_io_publish:
+        name: Publish (crates.io)
+        needs: [build-release]
+        runs-on: ubuntu-latest
+        timeout-minutes: 25
+        steps:
+        -   name: Checkout repository
+            uses: actions/checkout@v4
+            with:
+                persist-credentials: false
+
+        -   name: Install Rust
+            uses: dtolnay/rust-toolchain@stable
+            with:
+                toolchain: stable
+
+        -   name: Publish
+            run: cargo publish --no-verify
+            env:
+                CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }}
