@@ -17,7 +17,7 @@ on your `PATH`.
 * Pre-seed accounts when node is launched - no need to do it manually.
 * All your team members will run exactly the same reproducible setup.
 * Forget about long builds and setups: runs in your favorite CI tool as well!
-* *In progress: install from npm or PyPI.*
+* Install from npm - no need to configure unfamiliar build tools and compilers.
 
 ## Quickstart
 
