@@ -3,7 +3,7 @@
 set -euo pipefail
 
 script=init.js
-cat <<EOF >"$script"
+cat <<"EOF" >"$script"
     const accounts = [
 EOF
 
@@ -21,13 +21,21 @@ done <<<"${ACCOUNTS:-}"
 cat <<"EOF" >>"$script"
     ];
     for (const [pk, amount] of accounts) {
-        const address = web3.personal.importRawKey(pk, 'password')
-        eth.sendTransaction({
-            from: eth.coinbase,
-            to: address,
-            value: web3.toWei(amount)
-        });
-        console.log(`Seeded address ${address} with ${amount}.`)
+        try {
+            const address = web3.personal.importRawKey(pk, 'password');
+            eth.sendTransaction({
+                from: eth.coinbase,
+                to: address,
+                value: web3.toWei(amount),
+            });
+            console.log(`Seeded address ${address} with ${amount}.`);
+        } catch (err) {
+            if (err.toString().includes('account already exists')) {
+                console.log(`Private key 0x${pk} already seeded.`);
+            } else {
+                throw err;
+            }
+        }
     }
 EOF
 
