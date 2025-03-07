@@ -4,11 +4,11 @@ import { spawnSync } from "node:child_process";
 
 /**
  * Returns the executable path which is located inside `node_modules`
- * The naming convention is app-${os}-${arch}
+ * The naming convention is etnsc-bootstrap-${os}-${arch}
  * If the platform is `win32` or `cygwin`, executable will include a `.exe` extension.
  * @see https://nodejs.org/api/os.html#osarch
  * @see https://nodejs.org/api/os.html#osplatform
- * @example "x/xx/node_modules/app-darwin-arm64"
+ * @example "x/xx/node_modules/etnsc-bootstrap-darwin-arm64"
  */
 function getExePath() {
   const arch = process.arch;
@@ -21,7 +21,7 @@ function getExePath() {
 
   try {
     // Since the binary will be located inside `node_modules`, we can simply call `require.resolve`
-    return require.resolve(`app-${os}-${arch}/bin/app${extension}`);
+    return require.resolve(`etnsc-bootstrap-${os}-${arch}/bin/etnsc-bootstrap${extension}`);
   } catch (e) {
     throw new Error(
       `Couldn't find application binary inside node_modules for ${os}-${arch}`
