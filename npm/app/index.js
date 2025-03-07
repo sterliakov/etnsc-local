@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { spawnSync } from "node:child_process";
+const { spawnSync } = require("node:child_process");
 
 /**
  * Returns the executable path which is located inside `node_modules`

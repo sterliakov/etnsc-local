@@ -37,25 +37,26 @@ If you are already using compose, you can change the file name with `-f` flag
 variable.
 
 ```bash
-$ etnsc-bootstrap init
-$ etnsc-bootstrap start
+$ npx etnsc-bootstrap init
+$ npx etnsc-bootstrap start
 ```
 
 Read help for more:
 
 ```bash
-$ etnsc-bootstrap help
+$ npx etnsc-bootstrap help
 ```
 
 ## Installation
 
-You can just download a binary from the Releases page:
+The easiest way is to use `npx` if you have it installed:
 
 ```bash
-$ wget https://FIXME
+$ npx etnsc-bootstrap init
+$ npx etnsc-bootstrap start
 ```
 
-`cargo install` also works, if you have the Rut toolchain available:
+You can just download a binary for your OS and arch from the Releases page, unpack and run it. `cargo install` also works, if you have the Rust toolchain available:
 
 ```bash
 $ cargo install etnsc-bootstrap
