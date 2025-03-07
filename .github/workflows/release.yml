@@ -75,7 +75,7 @@ jobs:
                     ${{ env.DOCKER_USERNAME }}/${{ env.CUSTOM_IMAGE_NAME }}:latest,
                     ${{ env.DOCKER_USERNAME }}/${{ env.CUSTOM_IMAGE_NAME }}:${{ needs.create-release.outputs.version }},
                 build-args: |
-                    IMAGE_REF=latest
+                    IMAGE_REF=v6.0.0
 
     build-release:
         name: build-release
@@ -97,8 +97,6 @@ jobs:
             CROSS_VERSION: v0.2.5
       # Emit backtraces on panics.
             RUST_BACKTRACE: 1
-      # Build static releases with PCRE2.
-            PCRE2_SYS_STATIC: 1
         strategy:
             fail-fast: false
             matrix:
@@ -164,7 +162,7 @@ jobs:
         -   name: Build release binary
             shell: bash
             run: |
-                ${{ env.CARGO }} build --verbose --release --features pcre2 ${{ env.TARGET_FLAGS }}
+                ${{ env.CARGO }} build --verbose --release ${{ env.TARGET_FLAGS }}
                 if [ "${{ matrix.os }}" = "windows-latest" ]; then
                   bin="target/${{ matrix.target }}/release/etnsc-local.exe"
                 else

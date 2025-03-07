@@ -5,7 +5,7 @@ services:
     # for inter-container communication if `electroneum-node` is too long
     # for you.
     electroneum-node:
-        image: sterliakov/electroneum-local:v6.0.0
+        image: sterliakov/electroneum-local:latest
         # You can use command to pass any extra flags to etn-sc
         command: ''
         environment:
