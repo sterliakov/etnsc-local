@@ -19,13 +19,14 @@ pub fn init_command(filename: &Path, force: bool) -> Result<bool, String> {
         .yellow(),
         COMPOSE_FILE
     );
-    if Confirm::with_theme(&ColorfulTheme::default())
-        .with_prompt("Do you want to continue?")
-        .default(true)
-        .show_default(true)
-        .wait_for_newline(true)
-        .interact()
-        .unwrap()
+    if force
+        || Confirm::with_theme(&ColorfulTheme::default())
+            .with_prompt("Do you want to continue?")
+            .default(true)
+            .show_default(true)
+            .wait_for_newline(true)
+            .interact()
+            .unwrap()
     {
         fs::write(filename, COMPOSE_FILE)
             .map_err(|_| "Failed to create docker-compose file.".to_string())
