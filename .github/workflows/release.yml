@@ -54,8 +54,7 @@ jobs:
             contents: read
             id-token: write
         steps:
-        -   name: Check out the repo
-            uses: actions/checkout@v4
+        -   uses: actions/checkout@v4
             with:
                 persist-credentials: false
 
@@ -129,13 +128,10 @@ jobs:
                     target: aarch64-pc-windows-msvc
 
         steps:
-        -   name: Checkout repository
-            uses: actions/checkout@v4
+        -   uses: actions/checkout@v4
             with:
                 persist-credentials: false
-
-        -   name: Install Rust
-            uses: dtolnay/rust-toolchain@stable
+        -   uses: dtolnay/rust-toolchain@stable
             with:
                 toolchain: ${{ matrix.rust }}
                 target: ${{ matrix.target }}
@@ -267,13 +263,10 @@ jobs:
         needs: [create-release, build-release]
         runs-on: ubuntu-latest
         steps:
-        -   name: Checkout repository
-            uses: actions/checkout@v4
+        -   uses: actions/checkout@v4
             with:
                 persist-credentials: false
-
-        -   name: Install node
-            uses: actions/setup-node@v4
+        -   uses: actions/setup-node@v4
             with:
                 node-version: 20
                 registry-url: https://registry.npmjs.org
@@ -296,13 +289,10 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 25
         steps:
-        -   name: Checkout repository
-            uses: actions/checkout@v4
+        -   uses: actions/checkout@v4
             with:
                 persist-credentials: false
-
-        -   name: Install Rust
-            uses: dtolnay/rust-toolchain@stable
+        -   uses: dtolnay/rust-toolchain@stable
             with:
                 toolchain: stable
 
@@ -310,3 +300,34 @@ jobs:
             run: cargo publish --no-verify
             env:
                 CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }}
+
+    test_released:
+        name: Test released on ${{ matrix.os }}
+        needs: [create-release, npm_base_publish]
+        runs-on: ${{matrix.os}}-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu, windows, macos]
+        steps:
+        -   uses: actions/checkout@v4
+            with:
+                persist-credentials: false
+        -   uses: actions/setup-node@v4
+            with:
+                node-version: 20
+                registry-url: https://registry.npmjs.org
+        -   uses: astral-sh/setup-uv@v5
+            with:
+                enable-cache: false
+
+        -   name: Run tests with npm package
+            working-directory: ./test
+            run: |
+                npx "etnsc-bootstrap@$VERSION" init -F
+                npx "etnsc-bootstrap@$VERSION" start
+                npx "etnsc-bootstrap@$VERSION" status -v
+                uv run --script test_node.py
+                npx "etnsc-bootstrap@$VERSION" stop
+            env:
+                VERSION: ${{ needs.create-release.outputs.version }}

@@ -27,7 +27,7 @@ jobs:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     test:
-        name: Build and test on ${{matrix.os == 'ubuntu' && 'Linux' || matrix.os == 'macos' && 'macOS' || matrix.os == 'windows' && 'Windows' || '???'}}
+        name: Build and test on ${{ matrix.os }}
         runs-on: ${{matrix.os}}-latest
         strategy:
             fail-fast: false
