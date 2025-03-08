@@ -43,15 +43,10 @@ jobs:
         -   name: Build
             run: cargo build --release
 
-        -   name: Init
+        -   name: Init and start node
             run: |
                 cargo run --release -- init -F
-                if ! [ -f docker-compose.yaml ]; then
-                  echo "File not created" >&2
-                  exit 1
-                fi
-        -   name: Start node
-            run: cargo run --release -- start
+                cargo run --release -- start
         -   name: Check node status
             run: cargo run --release -- status | grep running
 
