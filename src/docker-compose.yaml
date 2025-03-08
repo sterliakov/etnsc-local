@@ -36,7 +36,7 @@ services:
         volumes:
         -   electroneum_data:/opt/data
         healthcheck:
-            test: [CMD, curl, -X, POST, -H, 'Content-Type: application/json', --data, '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":67}', http://localhost:8545]
+            test: [CMD, /healthcheck.sh]
             interval: 10s
             timeout: 1s
             retries: 3

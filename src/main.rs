@@ -145,6 +145,9 @@ fn main() {
     match entrypoint(cli) {
         Ok(true) => println!("{}", "Success!".green()),
         Ok(false) => {}
-        Err(e) => println!("{}", format!("Command execution error:\n{e}").red()),
+        Err(e) => {
+            println!("{}", format!("Command execution error:\n{e}").red());
+            std::process::exit(1);
+        }
     }
 }

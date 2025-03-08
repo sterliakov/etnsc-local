@@ -40,19 +40,21 @@ jobs:
         -   uses: dtolnay/rust-toolchain@stable
             with:
                 toolchain: stable
+        -   uses: astral-sh/setup-uv@v5
+
         -   name: Build
             run: cargo build --release
 
         -   name: Init and start node
+            shell: bash
             run: |
                 cargo run --release -- init -F
                 # Use locally built docker image
                 yq -i '.services.electroneum-node.build = {"context": "./docker", "args": {"IMAGE_REF": "v6.0.0"}}' docker-compose.yaml
                 cargo run --release -- start
         -   name: Check node status
-            run: cargo run --release -- status | grep running
+            run: cargo run --release -- status | grep healthy
 
-        -   uses: astral-sh/setup-uv@v5
         -   name: Run quick node test
             run: uv run --script test/test_node.py
 

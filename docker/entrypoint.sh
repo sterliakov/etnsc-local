@@ -48,6 +48,7 @@ password_file="password.txt"
 printf "password" >"$password_file"
 
 etn-sc js --dev --datadir "$data_mount" --password "$password_file" "$script"
+touch /ready.txt
 
 etn-sc --dev --datadir "$data_mount" \
     --http --http.addr 0.0.0.0 --http.port 8545 \
