@@ -15,7 +15,7 @@ pub fn stop_command(spec: &FileSpec) -> Result<bool, String> {
     Ok(true)
 }
 
-pub fn clear_command(spec: &FileSpec) -> Result<bool, String> {
+pub fn reset_command(spec: &FileSpec) -> Result<bool, String> {
     spec.require_compose_file()?;
     start_command(spec)?;
     spec.run_docker_command([

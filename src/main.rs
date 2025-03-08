@@ -33,8 +33,8 @@ enum Commands {
     Start(FileSpec),
     /// Stop the local node. All data will be retained when started again.
     Stop(FileSpec),
-    /// Clear remains from previous runs. This will erase all transactions history.
-    Clear(FileSpec),
+    /// Reset exiting data. This will erase all transactions history.
+    Reset(FileSpec),
     /// Get current node status and logs (if verbose).
     Status(FileSpec),
 }
@@ -135,7 +135,7 @@ fn entrypoint(cli: Cli) -> Result<bool, String> {
         Commands::Init(Init { force, file }) => commands::init_command(file, *force),
         Commands::Start(spec) => commands::start_command(spec),
         Commands::Stop(spec) => commands::stop_command(spec),
-        Commands::Clear(spec) => commands::clear_command(spec),
+        Commands::Reset(spec) => commands::reset_command(spec),
         Commands::Status(spec) => commands::status_command(spec),
     }
 }

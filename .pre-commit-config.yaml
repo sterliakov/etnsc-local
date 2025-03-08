@@ -30,6 +30,13 @@ repos:
     -   id: shellcheck
         args: [-x, -P, SCRIPTDIR]
 
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.10
+    hooks:
+    -   id: ruff-format
+    -   id: ruff
+        args: [--fix]
+
 -   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
     rev: v2.14.0
     hooks:
@@ -46,7 +53,7 @@ repos:
         files: .*Dockerfile[^.]*(\.[^.]*)?$
 
 -   repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.31.2
+    rev: 0.31.3
     hooks:
     -   id: check-github-workflows
 

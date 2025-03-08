@@ -1,0 +1,35 @@
+target-version = 'py312'
+
+[format]
+preview = true
+
+[lint]
+extend-ignore = [
+    "D1",  # Missing docstrings
+    "D400",  # Conflicts with D415
+    "D213",  # Conflicts with D212
+    "D203",  # Conflicts with D211
+    "DOC2",  # Returns not in docstring
+    "DOC4",  # Yields not in docstring
+    "DOC5",  # Exceptions not in docstring
+    "CPY001",  # Missing copyright notice at top of file
+    "TRY003",  # Avoid specifying long messages outside the exception class
+    "EM101",  # Exception must not use a string literal, assign to variable first
+    "EM102",  # Exception must not use an f-string literal, assign to variable first
+    "T201",  # Allow print
+    "S101",  # Allow assert
+    # For formatter
+    "COM812",
+]
+preview = true
+select = ["ALL"]
+unfixable = ['ERA001']
+
+[lint.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+required-imports = ["from __future__ import annotations"]
+split-on-trailing-comma = false
+
+[lint.pydocstyle]
+convention = "google"

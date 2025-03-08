@@ -1,0 +1,69 @@
+name: build
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+permissions:
+    contents: read
+
+jobs:
+    lint:
+        name: Run pre-commit
+        runs-on: ubuntu-latest
+        steps:
+        -   uses: actions/checkout@v4
+            with:
+                persist-credentials: false
+        -   uses: actions/setup-python@v5
+        -   uses: dtolnay/rust-toolchain@stable
+            with:
+                components: rustfmt, clippy
+                toolchain: stable
+        -   uses: pre-commit/action@v3.0.1
+            env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    test:
+        name: Build and test on ${{matrix.os == 'ubuntu' && 'Linux' || matrix.os == 'macos' && 'macOS' || matrix.os == 'windows' && 'Windows' || '???'}}
+        runs-on: ${{matrix.os}}-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu, windows, macos]
+        steps:
+        -   uses: actions/checkout@v4
+            with:
+                persist-credentials: false
+        -   uses: dtolnay/rust-toolchain@stable
+            with:
+                toolchain: stable
+        -   name: Build
+            run: cargo build --release
+
+        -   name: Init
+            run: |
+                cargo run --release -- init -F
+                if ! [ -f docker-compose.yaml ]; then
+                  echo "File not created" >&2
+                  exit 1
+                fi
+        -   name: Start node
+            run: cargo run --release -- start
+        -   name: Check node status
+            run: cargo run --release -- status | grep running
+
+        -   uses: astral-sh/setup-uv@v5
+        -   name: Run quick node test
+            run: uv run --script test/test_node.py
+
+        -   name: Reset and run again
+            run: |
+                cargo run --release -- reset
+                uv run --script test/test_node.py
+
+        -   name: Stop node
+            if: success() || failure()
+            run: cargo run --release -- stop

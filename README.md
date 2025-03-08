@@ -6,7 +6,7 @@ This is my submission to [Electroneum hackathon 2025](https://electroneum-hackat
 ## Prerequisites
 
 This tool should work on Linux, MacOS and Windows. The only requirement is
-having docker with compose plugin installed. If you don't have them available
+having docker with compose installed. If you don't have them available
 yet, go through the [installation](https://docs.docker.com/engine/install/) guide. Docker binary should be available
 on your `PATH`.
 
@@ -20,8 +20,6 @@ on your `PATH`.
 * Install from npm - no need to configure unfamiliar build tools and compilers.
 
 ## Quickstart
-
-To begin, grab a binary for your architecture from the Releases page.
 
 First, run `init` to create a docker-compose file. You can tweak it as needed
 and add other services. All configuration is done via environment variables
@@ -39,6 +37,18 @@ variable.
 ```bash
 $ npx etnsc-bootstrap init
 $ npx etnsc-bootstrap start
+```
+
+Re-seed the node (remove the data and begin from scratch):
+
+```bash
+$ npx etnsc-bootstrap reset
+```
+
+Stop the node when no longer needed:
+
+```bash
+$ npx etnsc-bootstrap stop
 ```
 
 Read help for more:
@@ -60,4 +70,34 @@ You can just download a binary for your OS and arch from the Releases page, unpa
 
 ```bash
 $ cargo install etnsc-bootstrap
+```
+
+## Remix users
+
+The node started this way can be used as a drop-in replacement for a manually
+started `etn-sc`. Same caveats apply: if you consider a web-based IDE usable
+and want to use Remix, you need to allow CORS requests to the node.
+
+To do so, edit the compose file created by `etnsc-bootstrap init` to add Remix
+to whitelisted domains. This is controlled by `HTTP_CORS_HOSTS` (or `CORS_HOSTS`
+for HTTP and websocket APIs together) variable. Adjust the file as follows:
+
+```yaml
+# You can edit this file freely, add other services, adjust the values
+# or do something else.
+services:
+    # Please do not rename this service. If necessary, add hostname
+    # for inter-container communication if `electroneum-node` is too long
+    # for you.
+    electroneum-node:
+        image: sterliakov/electroneum-local:latest
+        # You can use command to pass any extra flags to etn-sc
+        command: ''
+        environment:
+            # What domains to allow for websocket and HTTP (CORS) connections?
+            CORS_HOSTS: ''
+            # What domains to allow for HTTP (CORS) connections? Overrides CORS_HOSTS
+            HTTP_CORS_HOSTS: 'http://remix.ethereum.org' # <<< EDIT this line
+            # ...
+# Rest of the file unchanged
 ```
