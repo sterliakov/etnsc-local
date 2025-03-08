@@ -45,6 +45,7 @@ jobs:
         -   name: Setup yq on windows
             if: ${{ matrix.os == 'windows' }}
             uses: dcarbone/install-yq-action@v1
+
         # https://github.com/actions/runner/issues/1456
         -   name: Install docker on macos
             if: ${{ matrix.os == 'macos' }}
@@ -53,6 +54,7 @@ jobs:
                 open -a /Applications/Docker.app --args --unattended --accept-license
                 docker version
                 docker compose version
+
         -   name: Build
             run: cargo build --release
 
