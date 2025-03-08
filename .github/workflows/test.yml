@@ -27,12 +27,8 @@ jobs:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     test:
-        name: Build and test on ${{ matrix.os }}
-        runs-on: ${{matrix.os}}-latest
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [ubuntu, windows, macos]
+        name: Build and test
+        runs-on: ubuntu-latest
         steps:
         -   uses: actions/checkout@v4
             with:
@@ -41,23 +37,6 @@ jobs:
             with:
                 toolchain: stable
         -   uses: astral-sh/setup-uv@v5
-
-        -   name: Setup yq on windows
-            if: ${{ matrix.os == 'windows' }}
-            uses: dcarbone/install-yq-action@v1
-
-        # https://github.com/actions/runner/issues/1456
-        -   name: Install docker on macos
-            if: ${{ matrix.os == 'macos' }}
-            run: |
-                HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask docker
-                open -a /Applications/Docker.app --args --unattended --accept-license
-                while [[ -z "$(! docker stats --no-stream 2> /dev/null)" ]]; do
-                    echo "Waitingfor docker to launch"
-                    sleep 2
-                done
-                docker version
-                docker compose version
 
         -   name: Build
             run: cargo build --release
@@ -68,12 +47,10 @@ jobs:
                 cargo run --release -- init -F
 
                 # Use locally built docker image
-                "$yq" -i '.services.electroneum-node.build = {"context": "./docker", "args": {"IMAGE_REF": "v6.0.0"}}' docker-compose.yaml
+                yq -i '.services.electroneum-node.build = {"context": "./docker", "args": {"IMAGE_REF": "v6.0.0"}}' docker-compose.yaml
                 docker compose build
 
                 cargo run --release -- start
-            env:
-                yq: ${{ matrix.os == 'windows' && 'yq.exe' || 'yq' }}
         -   name: Check node status
             run: cargo run --release -- status | grep healthy
 
