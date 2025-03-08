@@ -51,6 +51,7 @@ jobs:
                 cargo run --release -- init -F
                 # Use locally built docker image
                 yq -i '.services.electroneum-node.build = {"context": "./docker", "args": {"IMAGE_REF": "v6.0.0"}}' docker-compose.yaml
+                docker compose build
                 cargo run --release -- start
         -   name: Check node status
             run: cargo run --release -- status | grep healthy
