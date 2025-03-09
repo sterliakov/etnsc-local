@@ -328,6 +328,10 @@ jobs:
         -   name: Run tests with npm package
             working-directory: ./test
             run: |
+                while ! npm view etnsc-bootstrap | grep "latest: $VERSION"; do
+                    echo "Waiting for package to become available"
+                    sleep 1
+                done
                 npx "etnsc-bootstrap@$VERSION" init -F
                 npx "etnsc-bootstrap@$VERSION" start
                 npx "etnsc-bootstrap@$VERSION" status -v
