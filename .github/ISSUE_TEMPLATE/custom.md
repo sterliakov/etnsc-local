@@ -1,5 +1,5 @@
 ---
-name: Custom issue template
+name: Question
 about: Ask a question
 title: ''
 labels: question
