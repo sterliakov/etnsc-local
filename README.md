@@ -51,6 +51,12 @@ Stop the node when no longer needed:
 $ npx etnsc-bootstrap stop
 ```
 
+Attach to JS console:
+
+```bash
+$ npx etnsc-bootstrap attach
+```
+
 Read help for more:
 
 ```bash
