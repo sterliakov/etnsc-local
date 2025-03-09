@@ -22,7 +22,7 @@ A clear and concise description of what you expected to happen.
 
 **System info:**
  - OS (e.g. Ubuntu 24.04, ideally `uname -a`):
--  Architecture (e.g. x86): 
+-  Architecture (e.g. x86):
  - `etnsc-bootstrap` version:
  - `etnsc-bootstrap` installation method (e.g. `npx`):
 
