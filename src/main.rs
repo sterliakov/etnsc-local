@@ -37,6 +37,8 @@ enum Commands {
     Reset(FileSpec),
     /// Get current node status and logs (if verbose).
     Status(FileSpec),
+    /// Attach and run JS console.
+    Attach(OnlyFile),
 }
 
 #[derive(Args)]
@@ -57,6 +59,13 @@ struct FileSpec {
     /// Display docker compose output and print more information.
     #[arg(short = 'v', long = "verbose", action)]
     verbose: bool,
+}
+
+#[derive(Args, Clone)]
+struct OnlyFile {
+    /// docker compose file name to use.
+    #[arg(short='f', long="file", env="ETNSC_COMPOSE_FILE", default_value=DEFAULT_FILE)]
+    file: PathBuf,
 }
 
 impl FileSpec {
@@ -118,6 +127,10 @@ impl FileSpec {
     }
 
     pub fn require_compose_file(&self) -> Result<(), String> {
+        let filename = format!("{}", self.file.display());
+        if filename.contains("\"") {
+            return Err("Compose file must not contain double quotes".to_string());
+        }
         if self.file.exists() {
             Ok(())
         } else {
@@ -137,6 +150,7 @@ fn entrypoint(cli: Cli) -> Result<bool, String> {
         Commands::Stop(spec) => commands::stop_command(spec),
         Commands::Reset(spec) => commands::reset_command(spec),
         Commands::Status(spec) => commands::status_command(spec),
+        Commands::Attach(file) => commands::attach_command(file.file.clone()),
     }
 }
 

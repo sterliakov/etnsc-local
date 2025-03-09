@@ -1,5 +1,8 @@
+use std::path::PathBuf;
+
 use crate::FileSpec;
 use colored::Colorize;
+use system::system;
 
 pub fn start_command(spec: &FileSpec) -> Result<bool, String> {
     spec.require_compose_file()?;
@@ -29,6 +32,21 @@ pub fn reset_command(spec: &FileSpec) -> Result<bool, String> {
     .map_err(|e| e.to_string())?;
     start_command(spec)?;
     Ok(true)
+}
+
+pub fn attach_command(file: PathBuf) -> Result<bool, String> {
+    let spec = FileSpec {
+        file,
+        verbose: false,
+    };
+    spec.require_compose_file()?;
+    // We need a system()-like function here to retain the TTY
+    let filename = format!("{}", spec.file.display());
+    system(&format!(
+        "docker compose -f \"{filename}\" exec electroneum-node etn-sc attach /opt/data/etn-sc.ipc"
+    ))
+    .map_err(|e| format!("Failed to spawn console: {e}"))?;
+    Ok(false)
 }
 
 pub fn status_command(spec: &FileSpec) -> Result<bool, String> {

@@ -2,6 +2,7 @@
 clap = {version = "4.5.31", features = ["derive", "env"]}
 colored = "3.0.0"
 dialoguer = "0.11.0"
+system = "0.3.3"
 
 [package]
 authors = ["Stanislav Terliakov <terlya.stas@gmail.com>"]

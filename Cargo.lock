@@ -168,6 +168,7 @@ dependencies = [
  "clap",
  "colored",
  "dialoguer",
+ "system",
 ]
 
 [[package]]
@@ -271,6 +272,12 @@ dependencies = [
  "quote",
  "unicode-ident",
 ]
+
+[[package]]
+name = "system"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf0010af984f1607939cf5f64a332bfbde3c533219b60dd96b8996c258cfc03a"
 
 [[package]]
 name = "tempfile"
